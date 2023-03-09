@@ -1,0 +1,3 @@
+Pizza's name is: Pizza by choice
+Pizza's size is: Small
+Pizza contains: dough cheese cheese 
