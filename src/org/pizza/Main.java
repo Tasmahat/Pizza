@@ -1,16 +1,19 @@
 package org.pizza;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Main {
+    private static final List<String> readyPizzasAndCalzones = new ArrayList<>();
+    private static final List<String> cookingPizzasAndCalzones = new ArrayList<>();
+
     public static final Menu actionMenu = new Menu (new String[] {
             "action",
             "Choose pizza",
             "Choose calzone",
+            "Cooking pizzas",
+            "Ready pizzas",
             "\033[31mExit(unavailable)\033[0m"
     });
 
@@ -72,14 +75,30 @@ public class Main {
                 showCalzone(userChoice);
             }
             case 3 -> {
+                System.out.println("Pizzas and calzones in progress are:");
+                for (String iter : cookingPizzasAndCalzones) {
+                    System.out.print(iter + ", ");
+                }
+                System.out.println("\n");
+                showMainMenu();
+            }
+            case 4 -> {
+                System.out.println("Pizzas and calzones finished cooking are:");
+                for (String iter : readyPizzasAndCalzones) {
+                    System.out.print(iter + ", ");
+                }
+                System.out.println("\n");
+                showMainMenu();
+            }
+            case 5 -> {
                 System.out.println("The choice is unavailable");
                 System.exit(1);
             }
             default -> System.out.println("An error has occurred");
         }
     }
-    // meow
-    public static void showPizza(int userChoice, int sizeChoice, int[] forTest) {
+
+    public static void showPizza (int userChoice, int sizeChoice, int[] forTest) {
         Pizza pizza = null;
         switch (userChoice) {
             case 1 -> pizza = new Pizza("Peperoni", new ArrayList<>(){{
@@ -141,6 +160,8 @@ public class Main {
                 }
             }
             pizza.showValues();
+            cookingPizzasAndCalzones.add(pizza.name + "(pizza)");
+            setTimer(pizza);
             if (forTest != null) {
                 return;
             }
@@ -192,6 +213,8 @@ public class Main {
                 showMainMenu();
             }
             calzone.showValues();
+            cookingPizzasAndCalzones.add(calzone.name + "(calzone)");
+            setTimer(calzone);
         }
         userChoice = calzoneMenu.chooseAction();
         showCalzone(userChoice);
@@ -210,6 +233,25 @@ public class Main {
                 showMainMenu();
             }
         }
+    }
+
+    public static void setTimer(Pizza pizza) {
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                cookingPizzasAndCalzones.remove (
+                        pizza.name +
+                           "(" + pizza.getClass().getSimpleName() + ")"
+                );
+                readyPizzasAndCalzones.add (
+                        pizza.name +
+                        "(" + pizza.getClass().getSimpleName() + ")"
+                );
+            }
+        };
+        Timer timer = new Timer("Timer");
+        long delay = 30*1000L;
+        timer.schedule(task,delay);
     }
 
     public static void clearConsole() {
