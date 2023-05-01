@@ -1,18 +1,15 @@
 package org.pizza;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class Main {
     private static final List<String> readyPizzasAndCalzones = new ArrayList<>();
-    private static final List<String> cookingPizzasAndCalzones = new ArrayList<>();
+    private static final HashMap<String,Integer> cookingPizzasAndCalzones = new HashMap<>();
+    private static boolean stop;
 
     public static final Menu actionMenu = new Menu (new String[] {
             "action",
             "Choose pizza",
             "Choose calzone",
-            "Cooking pizzas",
             "Ready pizzas",
             "\033[31mExit(unavailable)\033[0m"
     });
@@ -63,26 +60,25 @@ public class Main {
     }
 
     public static void showMainMenu() {
-        int userChoice = actionMenu.chooseAction();
+        if(!cookingPizzasAndCalzones.isEmpty()) {
+            stop=false;
+            showProgress();
+        }
+        int userChoice=actionMenu.chooseAction();
         switch (userChoice) {
             case 1 -> {
+                stop = true;
                 int sizeChoice = sizeMenu.chooseAction();
                 userChoice = pizzaMenu.chooseAction();
                 showPizza(userChoice, sizeChoice, null);
             }
             case 2 -> {
+                stop = true;
                 userChoice = calzoneMenu.chooseAction();
                 showCalzone(userChoice);
             }
             case 3 -> {
-                System.out.println("Pizzas and calzones in progress are:");
-                for (String iter : cookingPizzasAndCalzones) {
-                    System.out.print(iter + ", ");
-                }
-                System.out.println("\n");
-                showMainMenu();
-            }
-            case 4 -> {
+                stop = true;
                 System.out.println("Pizzas and calzones finished cooking are:");
                 for (String iter : readyPizzasAndCalzones) {
                     System.out.print(iter + ", ");
@@ -90,7 +86,8 @@ public class Main {
                 System.out.println("\n");
                 showMainMenu();
             }
-            case 5 -> {
+            case 4 -> {
+                stop = true;
                 System.out.println("The choice is unavailable");
                 System.exit(1);
             }
@@ -160,8 +157,9 @@ public class Main {
                 }
             }
             pizza.showValues();
-            cookingPizzasAndCalzones.add(pizza.name + "(pizza)");
+            cookingPizzasAndCalzones.put(pizza.name + "(Pizza)",30);
             setTimer(pizza);
+            startCountdown(pizza);
             if (forTest != null) {
                 return;
             }
@@ -213,8 +211,9 @@ public class Main {
                 showMainMenu();
             }
             calzone.showValues();
-            cookingPizzasAndCalzones.add(calzone.name + "(calzone)");
+            cookingPizzasAndCalzones.put(calzone.name + "(Calzone)",30);
             setTimer(calzone);
+            startCountdown(calzone);
         }
         userChoice = calzoneMenu.chooseAction();
         showCalzone(userChoice);
@@ -241,7 +240,7 @@ public class Main {
             public void run() {
                 cookingPizzasAndCalzones.remove (
                         pizza.name +
-                           "(" + pizza.getClass().getSimpleName() + ")"
+                        "(" + pizza.getClass().getSimpleName() + ")"
                 );
                 readyPizzasAndCalzones.add (
                         pizza.name +
@@ -252,6 +251,54 @@ public class Main {
         Timer timer = new Timer("Timer");
         long delay = 30*1000L;
         timer.schedule(task,delay);
+    }
+
+    public static void startCountdown(Pizza pizza) {
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                int oldValue = cookingPizzasAndCalzones.get(
+                        pizza.name +
+                                "(" + pizza.getClass().getSimpleName() + ")"
+                );
+                if(oldValue<=1) {
+                    cancel();
+                }
+                cookingPizzasAndCalzones.replace(
+                        pizza.name +
+                        "(" + pizza.getClass().getSimpleName() + ")",
+                        oldValue-1
+                );
+            }
+        };
+        Timer timer = new Timer();
+        long period = 1000L;
+        timer.schedule(task,0,period);
+    }
+
+    public static void showProgress() {
+        Timer timer = new Timer();
+        long period = 3*1000L;
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                if(cookingPizzasAndCalzones.isEmpty() || stop) {
+                    timer.cancel();
+                }
+                clearConsole();
+                if(!cookingPizzasAndCalzones.isEmpty()){
+                    System.out.println("Time left for pizza and calzone to get ready is:");
+                }
+                for (Map.Entry<String, Integer> entry : cookingPizzasAndCalzones.entrySet()) {
+                    String key = entry.getKey();
+                    Integer value = entry.getValue();
+                    System.out.println(key + ": " + value + "sec.");
+                }
+                System.out.print("\n");
+                actionMenu.showMenu();
+            }
+        };
+        timer.schedule(task,0,period);
     }
 
     public static void clearConsole() {

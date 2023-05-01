@@ -6,6 +6,7 @@ public class Menu {
     String[] points;
     int length;
     Scanner scan = new Scanner(System.in);
+    int axis;
 
     public Menu(String[] points) {
         length = points.length;
@@ -13,7 +14,7 @@ public class Menu {
     }
 
     public int chooseAction() {
-        int axis = 1;
+        axis = 1;
         String userLine = null;
         while (!Objects.equals(userLine, " ")) {
             if (Objects.equals(userLine, "w") && axis > 1)
@@ -53,5 +54,22 @@ public class Menu {
         }
         Main.clearConsole();
         return userInt;
+    }
+
+    public void showMenu() {
+        System.out.println(
+                "\033[32mChoose " +
+                        points[0] +
+                        "\033[0m"
+        );
+        for (int i = 1; i < length; i++) {
+            if (axis == i) {
+                System.out.print("\033[47m");
+            }
+            System.out.println(points[i]);
+            if (axis == i) {
+                System.out.print("\033[0m");
+            }
+        }
     }
 }
