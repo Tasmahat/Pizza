@@ -3,15 +3,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 public class Pizza {
-    String name;
-    List<Ingredients> ingredients;
-    Sizes size;
-    HashMap<String, Integer> ingredientAndQuantity = new HashMap<>();
+    public final String name;
+    private final List<Ingredients> ingredients;
+    public Sizes size;
+    public final Map<String, Integer> ingredientAndQuantity = new HashMap<>();
 
     public Pizza (String name, List<Ingredients> ingredients) {
         this.name = name;
@@ -19,9 +18,9 @@ public class Pizza {
     }
 
     public void showValues() {
-        File myFile= new File("log.txt");
+        var myFile= new File("log.txt");
         PrintWriter out = null;
-        HashMap<Ingredients,Integer> allIngredients= new HashMap<>();
+        Map<Ingredients,Integer> allIngredients = new HashMap<>();
         allIngredients.put(Ingredients.cheese,0);
         allIngredients.put(Ingredients.tomatoes,0);
         allIngredients.put(Ingredients.peperoni,0);
@@ -64,8 +63,7 @@ public class Pizza {
         System.out.print("\n");
         out.print("\n");
         out.close();
-        if(!ingredientAndQuantity.isEmpty())
-        {
+        if(!ingredientAndQuantity.isEmpty()) {
             System.out.println (
                     "Additional ingredients:"
             );

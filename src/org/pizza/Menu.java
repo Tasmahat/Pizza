@@ -3,10 +3,10 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class Menu {
-    String[] points;
-    int length;
-    Scanner scan = new Scanner(System.in);
-    int axis;
+    public final String[] points;
+    private final int length;
+    private final Scanner scan = new Scanner(System.in);
+    private int axis;
 
     public Menu(String[] points) {
         length = points.length;
@@ -17,16 +17,17 @@ public class Menu {
         axis = 1;
         String userLine = null;
         while (!Objects.equals(userLine, " ")) {
-            if (Objects.equals(userLine, "w") && axis > 1)
+            if (Objects.equals(userLine, "w") && axis > 1) {
                 axis--;
-            if (Objects.equals(userLine, "s") && axis < length - 1)
+            } else if (Objects.equals(userLine, "s") && axis < length - 1) {
                 axis++;
+            }
             System.out.println(
                     "\033[32mChoose " +
                     points[0] +
                     "\033[0m"
             );
-            for (int i = 1; i < length; i++) {
+            for (var i = 1; i < length; i++) {
                 if (axis == i) {
                     System.out.print("\033[47m");
                 }
