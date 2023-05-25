@@ -4,5 +4,5 @@ public enum Sizes {
     Small,
     Medium,
     Large,
-    Average
+    Average;
 }

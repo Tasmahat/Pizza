@@ -6,25 +6,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Pizza {
+public class Pizza implements Bakeable{
     public final String name;
     private final List<Ingredients> ingredients;
-    public Sizes size;
-    public final Map<String, Integer> ingredientAndQuantity = new HashMap<>();
+    private final Sizes size;
+    public Map<String, Integer> ingredientAndQuantity = new HashMap<>();
 
-    public Pizza (String name, List<Ingredients> ingredients) {
+    public Pizza (String name, List<Ingredients> ingredients, Sizes size) {
         this.name = name;
         this.ingredients = ingredients;
+        this.size = size;
     }
 
-    public void showValues() {
-        var myFile= new File("log.txt");
+    public void showMainInfo() {
+        var myFile = new File("log.txt");
         PrintWriter out = null;
-        Map<Ingredients,Integer> allIngredients = new HashMap<>();
-        allIngredients.put(Ingredients.cheese,0);
-        allIngredients.put(Ingredients.tomatoes,0);
-        allIngredients.put(Ingredients.peperoni,0);
-        allIngredients.put(Ingredients.ham,0);
+        Map<Ingredients, Integer> allIngredients = new HashMap<>();
+        allIngredients.put(Ingredients.cheese, 0);
+        allIngredients.put(Ingredients.tomatoes, 0);
+        allIngredients.put(Ingredients.peperoni, 0);
+        allIngredients.put(Ingredients.ham, 0);
 
         try {
             out = new PrintWriter(myFile);
@@ -34,21 +35,21 @@ public class Pizza {
 
         out.print(
                 this.getClass().getSimpleName() + "'s name is: " + name + "\n" +
-                this.getClass().getSimpleName() + "'s size is: " + size + "\n" +
-                this.getClass().getSimpleName() + " contains: ");
+                        this.getClass().getSimpleName() + "'s size is: " + size + "\n" +
+                        this.getClass().getSimpleName() + " contains: ");
         System.out.print(
                 this.getClass().getSimpleName() + "'s name is: " + name + "\n" +
-                this.getClass().getSimpleName() + "'s size is: " + size + "\n" +
-                this.getClass().getSimpleName() + " contains: ");
+                        this.getClass().getSimpleName() + "'s size is: " + size + "\n" +
+                        this.getClass().getSimpleName() + " contains: ");
 
         for (Ingredients element : ingredients) {
-            if(element == Ingredients.dough) {
+            if (element == Ingredients.dough) {
                 System.out.print("dough ");
                 out.print("dough ");
-            } else if(element == Ingredients.cheese) {
+            } else if (element == Ingredients.cheese) {
                 System.out.print("cheese ");
                 out.print("cheese ");
-            } else if (element==Ingredients.peperoni) {
+            } else if (element == Ingredients.peperoni) {
                 System.out.print("peperoni ");
                 out.print("peperoni ");
             } else if (element == Ingredients.tomatoes) {
@@ -63,6 +64,10 @@ public class Pizza {
         System.out.print("\n");
         out.print("\n");
         out.close();
+    }
+
+    public void showAdditionalInfo(Map<String,Integer> ingredientAndQuantity) {
+        this.ingredientAndQuantity = ingredientAndQuantity;
         if(!ingredientAndQuantity.isEmpty()) {
             System.out.println (
                     "Additional ingredients:"
