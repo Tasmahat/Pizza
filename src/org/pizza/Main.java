@@ -4,7 +4,7 @@ import java.util.*;
 public class Main {
     private static final List<String> readyPizzasAndCalzones = new ArrayList<>();
     private static final HashMap<String,Integer> cookingPizzasAndCalzones = new HashMap<>();
-    private static boolean isTimerStopped;
+    private static boolean stop;
     private static int index;
 
     public static final Menu actionMenu = new Menu (new String[] {
@@ -62,13 +62,13 @@ public class Main {
 
     public static void showMainMenu() {
         if(!cookingPizzasAndCalzones.isEmpty()) {
-            isTimerStopped=false;
+            stop=false;
             showProgress();
         }
         int userChoice=actionMenu.chooseAction();
         switch (userChoice) {
             case 1 -> {
-                isTimerStopped = true;
+                stop = true;
                 int sizeChoice = sizeMenu.chooseAction();
                 if (sizeChoice == 4) {
                     showMainMenu();
@@ -78,12 +78,12 @@ public class Main {
                 }
             }
             case 2 -> {
-                isTimerStopped = true;
+                stop = true;
                 userChoice = calzoneMenu.chooseAction();
                 showCalzone(userChoice);
             }
             case 3 -> {
-                isTimerStopped = true;
+                stop = true;
                 System.out.println("Pizzas and calzones finished cooking are:");
                 for (String iter : readyPizzasAndCalzones) {
                     System.out.print(iter + ", ");
@@ -91,7 +91,7 @@ public class Main {
                 System.out.println("\n");
             }
             case 4 -> {
-                isTimerStopped = true;
+                stop = true;
                 System.out.println("The choice is unavailable");
                 System.exit(1);
             }
@@ -100,28 +100,59 @@ public class Main {
     }
 
     public static void showPizza (int userChoice, int sizeChoice, int[] forTest) {
-        Bakeable pizza = null;
+        Pizza pizza = null;
         switch (userChoice) {
-            case 1 -> pizza = BakeryFabric.Bakery(
-                    BakeryFabric.Taste.Peperoni,
-                    BakeryFabric.BakeryType.Pizza,
-                    sizeChoice
-            );
-            case 2 -> pizza = BakeryFabric.Bakery(
-                    BakeryFabric.Taste.Margaritha,
-                    BakeryFabric.BakeryType.Pizza,
-                    sizeChoice
-            );
-            case 3 -> pizza = BakeryFabric.Bakery(
-                    BakeryFabric.Taste.ByChoice,
-                    BakeryFabric.BakeryType.Pizza,
-                    sizeChoice
-            );
+            case 1 -> pizza = new Pizza("Peperoni", new ArrayList<>(){{
+                add(Ingredients.dough);
+                add(Ingredients.cheese);
+                add(Ingredients.peperoni);
+            }});
+            case 2 -> pizza = new Pizza("Margaritha", new ArrayList<>(){{
+                add(Ingredients.dough);
+                add(Ingredients.cheese);
+                add(Ingredients.tomatoes);
+            }});
+            case 3 -> {
+                List<Ingredients> pizzaByChoiceList = new ArrayList<>();
+                pizzaByChoiceList.add(Ingredients.dough);
+                if (forTest == null) {
+                    do {
+                        userChoice = ingredientsMenu.chooseAction();
+                        switch(userChoice) {
+                            case 1 -> pizzaByChoiceList.add(Ingredients.cheese);
+                            case 2 -> pizzaByChoiceList.add(Ingredients.peperoni);
+                            case 3 -> pizzaByChoiceList.add(Ingredients.tomatoes);
+                            case 4 -> pizzaByChoiceList.add(Ingredients.ham);
+                            default -> System.out.println("An error has occurred");
+                        }
+                        System.out.println("Current ingredients in pizza are:");
+                        System.out.println(pizzaByChoiceList);
+                    } while (userChoice != 5);
+                }
+                else {
+                    for (int j : forTest) {
+                        switch (j) {
+                            case 1 -> pizzaByChoiceList.add(Ingredients.cheese);
+                            case 2 -> pizzaByChoiceList.add(Ingredients.peperoni);
+                            case 3 -> pizzaByChoiceList.add(Ingredients.tomatoes);
+                            case 4 -> pizzaByChoiceList.add(Ingredients.ham);
+                            default -> System.out.println("An error has occurred");
+                        }
+                    }
+                }
+                pizza = new Pizza("Pizza by choice", pizzaByChoiceList);
+            }
             case 4 -> showMainMenu();
             default -> System.out.println("An error has occurred");
         }
         if (pizza != null) {
-            pizza.showMainInfo();
+            switch (sizeChoice) {
+                case 1 -> pizza.size = Sizes.Small;
+                case 2 -> pizza.size = Sizes.Medium;
+                case 3 -> pizza.size = Sizes.Large;
+                case 4 -> showMainMenu();
+                default -> System.out.println("An error has occurred");
+            }
             if(forTest==null) {
                 userChoice = filterIngredientsMenu.chooseAction();
                 if (userChoice == 1) {
@@ -130,6 +161,7 @@ public class Main {
                     showMainMenu();
                 }
             }
+            pizza.showValues();
             index++;
             cookingPizzasAndCalzones.put(index + ". " + pizza.name + "(Pizza)",30);
             setTimer(pizza, index);
@@ -143,24 +175,41 @@ public class Main {
     }
 
     public static void showCalzone(int userChoice) {
-        Bakeable calzone = null;
+        Calzone calzone = null;
         switch (userChoice) {
-            case 1 -> calzone = BakeryFabric.Bakery(
-                    BakeryFabric.Taste.AllIncluded,
-                    BakeryFabric.BakeryType.Calzone, 4
-            );
-            case 2 -> calzone = BakeryFabric.Bakery(
-                    BakeryFabric.Taste.Peperoni,
-                    BakeryFabric.BakeryType.Calzone, 4
-            );
-            case 3 -> calzone = BakeryFabric.Bakery(
-                    BakeryFabric.Taste.ByChoice,
-                    BakeryFabric.BakeryType.Calzone, 4
-            );
+            case 1 -> calzone = new Calzone("All included", new ArrayList<>(){{
+                add(Ingredients.dough);
+                add(Ingredients.cheese);
+                add(Ingredients.peperoni);
+                add(Ingredients.tomatoes);
+            }});
+            case 2 -> calzone = new Calzone("Peperoni", new ArrayList<>(){{
+                add(Ingredients.dough);
+                add(Ingredients.cheese);
+                add(Ingredients.peperoni);
+            }});
+            case 3 -> {
+                List<Ingredients> calzoneByChoiceList = new ArrayList<>();
+                calzoneByChoiceList.add(Ingredients.dough);
+                do{
+                    userChoice=ingredientsMenu.chooseAction();
+                    switch (userChoice) {
+                        case 1 -> calzoneByChoiceList.add(Ingredients.cheese);
+                        case 2 -> calzoneByChoiceList.add(Ingredients.peperoni);
+                        case 3 -> calzoneByChoiceList.add(Ingredients.tomatoes);
+                        case 4 -> calzoneByChoiceList.add(Ingredients.ham);
+                        default -> System.out.println("An error has occurred");
+                    }
+                    System.out.println("Current ingredients in calzone are:");
+                    System.out.println(calzoneByChoiceList);
+                }while(userChoice!=5);
+                calzone = new Calzone("Calzone by choice", calzoneByChoiceList);
+            }
             case 4 -> showMainMenu();
             default -> System.out.println("An error has occurred");
         }
         if (calzone != null) {
+            calzone.size = Sizes.Average;
             userChoice=filterIngredientsMenu.chooseAction();
             if (userChoice == 1) {
                 chooseIngredients(calzone);
@@ -168,7 +217,7 @@ public class Main {
             else if (userChoice == 3) {
                 showMainMenu();
             }
-            showPizzaOrCalzone(calzone);
+            calzone.showValues();
             index++;
             cookingPizzasAndCalzones.put(index + ". " + calzone.name + "(Calzone)", 30);
             setTimer(calzone, index);
@@ -178,28 +227,22 @@ public class Main {
         showCalzone(userChoice);
     }
 
-    public static void showPizzaOrCalzone(Bakeable pizza) {
-        pizza.showMainInfo();
-    }
-
-    public static void chooseIngredients(Bakeable pizza) {
-        Map<String,Integer> ingredientAndQuantity = new HashMap<>();
+    public static void chooseIngredients(Pizza pizza) {
         while(true) {
             System.out.println("You have chosen:");
-            System.out.println(ingredientAndQuantity);
+            System.out.println(pizza.ingredientAndQuantity);
             int userChoice = ingredientsMenu.chooseAction();
             if (userChoice > 0 && userChoice < 5) {
-                ingredientAndQuantity.put(ingredientsMenu.points[userChoice], actionMenu.enterAction());
+                pizza.ingredientAndQuantity.put(ingredientsMenu.points[userChoice], actionMenu.enterAction());
             } else if (userChoice == 5) {
                 return;
             } else {
                 showMainMenu();
             }
         }
-        pizza.showAdditionalInfo(ingredientAndQuantity);
     }
 
-    public static void setTimer(Bakeable pizza, int index) {
+    public static void setTimer(Pizza pizza, int index) {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
@@ -219,7 +262,7 @@ public class Main {
         timer.schedule(task,delay);
     }
 
-    public static void startCountdown(Bakeable pizza, int index) {
+    public static void startCountdown(Pizza pizza, int index) {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
@@ -251,7 +294,7 @@ public class Main {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                if(cookingPizzasAndCalzones.isEmpty() || isTimerStopped) {
+                if(cookingPizzasAndCalzones.isEmpty() || stop) {
                     timer.cancel();
                 } else {
                     clearConsole();
