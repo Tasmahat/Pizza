@@ -6,7 +6,7 @@ public class Menu {
     public final String[] points;
     private final int length;
     private final Scanner scan = new Scanner(System.in);
-    private int axis;
+    private int selected;
 
     public Menu(String[] points) {
         length = points.length;
@@ -14,13 +14,13 @@ public class Menu {
     }
 
     public int chooseAction() {
-        axis = 1;
+        selected = 1;
         String userLine = null;
         while (!Objects.equals(userLine, " ")) {
-            if (Objects.equals(userLine, "w") && axis > 1) {
-                axis--;
-            } else if (Objects.equals(userLine, "s") && axis < length - 1) {
-                axis++;
+            if (Objects.equals(userLine, "w") && selected > 1) {
+                selected--;
+            } else if (Objects.equals(userLine, "s") && selected < length - 1) {
+                selected++;
             }
             System.out.println(
                     "\033[32mChoose " +
@@ -28,18 +28,18 @@ public class Menu {
                     "\033[0m"
             );
             for (var i = 1; i < length; i++) {
-                if (axis == i) {
+                if (selected == i) {
                     System.out.print("\033[47m");
                 }
                 System.out.println(points[i]);
-                if (axis == i) {
+                if (selected == i) {
                     System.out.print("\033[0m");
                 }
             }
             userLine = scan.nextLine();
             Main.clearConsole();
         }
-        return axis;
+        return selected;
     }
 
     public int enterAction() {
@@ -64,11 +64,11 @@ public class Menu {
                         "\033[0m"
         );
         for (int i = 1; i < length; i++) {
-            if (axis == i) {
+            if (selected == i) {
                 System.out.print("\033[47m");
             }
             System.out.println(points[i]);
-            if (axis == i) {
+            if (selected == i) {
                 System.out.print("\033[0m");
             }
         }

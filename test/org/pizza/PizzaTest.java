@@ -13,7 +13,7 @@ class PizzaTest {
     @Test
     void testNameRepetition () throws IOException {
         int[] cheese = new int[]{1,1};
-        Main.showPizza(3,1,cheese);
+        Main.createPizza(3,1,cheese);
         BufferedReader in = null;
         try {
             in = new BufferedReader(new FileReader("log.txt"));

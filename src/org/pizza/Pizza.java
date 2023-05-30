@@ -9,22 +9,18 @@ import java.util.Map;
 public class Pizza {
     public final String name;
     private final List<Ingredients> ingredients;
-    public Sizes size;
+    public final Sizes size;
     public final Map<String, Integer> ingredientAndQuantity = new HashMap<>();
 
-    public Pizza (String name, List<Ingredients> ingredients) {
+    public Pizza (String name, List<Ingredients> ingredients, Sizes size) {
         this.name = name;
         this.ingredients = ingredients;
+        this.size=size;
     }
 
-    public void showValues() {
+    public void showMainInfo() {
         var myFile= new File("log.txt");
-        PrintWriter out = null;
-        Map<Ingredients,Integer> allIngredients = new HashMap<>();
-        allIngredients.put(Ingredients.cheese,0);
-        allIngredients.put(Ingredients.tomatoes,0);
-        allIngredients.put(Ingredients.peperoni,0);
-        allIngredients.put(Ingredients.ham,0);
+        PrintWriter out;
 
         try {
             out = new PrintWriter(myFile);
@@ -42,27 +38,45 @@ public class Pizza {
                 this.getClass().getSimpleName() + " contains: ");
 
         for (Ingredients element : ingredients) {
-            if(element == Ingredients.dough) {
-                System.out.print("dough ");
-                out.print("dough ");
-            } else if(element == Ingredients.cheese) {
-                System.out.print("cheese ");
-                out.print("cheese ");
-            } else if (element==Ingredients.peperoni) {
-                System.out.print("peperoni ");
-                out.print("peperoni ");
-            } else if (element == Ingredients.tomatoes) {
-                System.out.print("tomatoes ");
-                out.print("tomatoes ");
-            } else if (element == Ingredients.ham) {
-                System.out.print("ham ");
-                out.print("ham ");
+            switch (element) {
+                case dough -> {
+                    System.out.print("dough ");
+                    out.print("dough ");
+                }
+
+                case cheese -> {
+                    System.out.print("cheese ");
+                    out.print("cheese ");
+                }
+
+                case peperoni -> {
+                    System.out.print("peperoni ");
+                    out.print("peperoni ");
+                }
+
+                case tomatoes -> {
+                    System.out.print("tomatoes ");
+                    out.print("tomatoes ");
+                }
+
+                case ham -> {
+                    System.out.print("ham ");
+                    out.print("ham ");
+                }
+
+                default -> {
+                    System.out.println("An error has occurred");
+                    out.print("An error has occurred");
+                }
             }
         }
 
         System.out.print("\n");
         out.print("\n");
         out.close();
+    }
+
+    public void showAdditionalIngredients() {
         if(!ingredientAndQuantity.isEmpty()) {
             System.out.println (
                     "Additional ingredients:"
